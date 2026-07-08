@@ -18,6 +18,9 @@
       "auto"
     ]
   },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "background_color": "#4F46E5",
   "theme_color": "#4F46E5",
   "orientation": "portrait",
