@@ -12,26 +12,16 @@
   "lang": "id",
   "icons": [
     {
-      "src": "icons/192x192 Blue Sense.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icons/512 x 512 Blue Sense.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icons/screenshot1.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/screenshot2.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
@@ -41,8 +31,9 @@
       "url": "./index.html",
       "icons": [
         {
-          "src": "icons/192x192 Blue Sense.png",
-          "sizes": "192x192"
+          "src": "icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     }
