@@ -1,4 +1,5 @@
-const CACHE_NAME = "pwa-template-v2";
+const CACHE_NAME = "bluesense-pwa-v3";
+const RUNTIME_CACHE = "bluesense-runtime-v3";
 const BASE_URL = self.registration.scope;
 
 const urlsToCache = [
@@ -12,64 +13,110 @@ const urlsToCache = [
   `${BASE_URL}icons/icon-512x512.png`,
 ];
 
-// Install Service Worker & simpan file ke cache
+// Install Event
 self.addEventListener("install", event => {
-  self.skipWaiting(); // langsung aktif tanpa reload manual
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-      .catch(err => console.error("Cache gagal dimuat:", err))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Aktivasi dan hapus cache lama
+// Activate Event
 self.addEventListener("activate", event => {
   event.waitUntil(
-    (async () => {
-      const keys = await caches.keys();
-      await Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            console.log("Menghapus cache lama:", key);
-            return caches.delete(key);
-          }
-        })
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.filter(key => key !== CACHE_NAME && key !== RUNTIME_CACHE)
+            .map(key => caches.delete(key))
       );
-      await self.clients.claim(); // langsung klaim kontrol ke halaman
-    })()
+    }).then(() => self.clients.claim())
   );
 });
 
-// Fetch event: cache-first untuk file lokal, network-first untuk API
+// Fetch Event (Cache First for static, Network First for API/HTML)
 self.addEventListener("fetch", event => {
-  const request = event.request;
-  const url = new URL(request.url);
+  const req = event.request;
+  const url = new URL(req.url);
 
-  // Abaikan permintaan Chrome Extension, analytics, dll.
-  if (url.protocol.startsWith("chrome-extension")) return;
-  if (request.method !== "GET") return;
+  if (req.method !== "GET" || url.protocol.startsWith("chrome-extension")) return;
 
-  // File lokal (statis)
-  if (url.origin === self.location.origin) {
+  // Static Assets (Cache First, Network Fallback)
+  if (req.destination === "image" || req.destination === "style" || req.destination === "script") {
     event.respondWith(
-      caches.match(request).then(response => {
-        return (
-          response ||
-          fetch(request).catch(() => caches.match(`${BASE_URL}offline.html`))
-        );
+      caches.match(req).then(cachedRes => {
+        return cachedRes || fetch(req).then(netRes => {
+          return caches.open(RUNTIME_CACHE).then(cache => {
+            cache.put(req, netRes.clone());
+            return netRes;
+          });
+        });
       })
     );
-  } 
-  // Resource eksternal (API, CDN, dsb.)
-  else {
+  } else {
+    // Navigation & API (Network First, Cache Fallback)
     event.respondWith(
-      fetch(request)
-        .then(networkResponse => {
-          const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
-          return networkResponse;
-        })
-        .catch(() => caches.match(request))
+      fetch(req).then(netRes => {
+        return caches.open(RUNTIME_CACHE).then(cache => {
+          cache.put(req, netRes.clone());
+          return netRes;
+        });
+      }).catch(() => {
+        return caches.match(req).then(cachedRes => {
+          if (cachedRes) return cachedRes;
+          if (req.mode === "navigate") return caches.match(`${BASE_URL}offline.html`);
+        });
+      })
     );
   }
+});
+
+// Background Sync Event
+self.addEventListener("sync", event => {
+  if (event.tag === "sync-sensor-data") {
+    console.log("[Service Worker] Background Sync triggered: sync-sensor-data");
+    // Placeholder logic for syncing offline data when connection is restored
+    event.waitUntil(Promise.resolve());
+  }
+});
+
+// Periodic Sync Event
+self.addEventListener("periodicsync", event => {
+  if (event.tag === "update-dashboard") {
+    console.log("[Service Worker] Periodic Sync triggered: update-dashboard");
+    // Placeholder logic for periodic data refresh
+    event.waitUntil(Promise.resolve());
+  }
+});
+
+// Push Notification Event
+self.addEventListener("push", event => {
+  if (!event.data) return;
+  
+  const data = event.data.json() || { title: "Notifikasi Blue Sense AI", body: "Peringatan Kualitas Air" };
+  const options = {
+    body: data.body,
+    icon: `${BASE_URL}icons/icon-192x192.png`,
+    badge: `${BASE_URL}icons/icon-192x192.png`,
+    vibrate: [200, 100, 200],
+    data: data.url || BASE_URL
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification Click Event
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window" }).then(windowClients => {
+      if (windowClients.length > 0) {
+        windowClients[0].focus();
+        if (event.notification.data) windowClients[0].navigate(event.notification.data);
+      } else {
+        clients.openWindow(event.notification.data || BASE_URL);
+      }
+    })
+  );
 });
