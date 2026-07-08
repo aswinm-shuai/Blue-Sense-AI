@@ -1,0 +1,57 @@
+{
+  "id": "./",
+  "name": "Blue Sense AI",
+  "short_name": "Blue Sense AI",
+  "description": "Memonitor kualitas air kolam ikan secara real-time menggunakan sensor IoT, memberikan analisis kondisi air, prediksi perubahan kualitas air berbasis AI, rekomendasi tindakan otomatis, serta membantu peternak menjaga kesehatan ikan dan meningkatkan produktivitas budidaya.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "dir": "ltr",
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
+  "background_color": "#4F46E5",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Buka Beranda",
+      "short_name": "Home",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "productivity",
+    "utilities"
+  ]
+}
