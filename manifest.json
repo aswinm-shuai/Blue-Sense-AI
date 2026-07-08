@@ -12,12 +12,12 @@
   "lang": "id",
   "icons": [
     {
-      "src": "icons/icon-192x192-A.png",
+      "src": "icons/192x192 Blue Sense.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512x512-B.png",
+      "src": "icons/512 x 512 Blue Sense.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -41,7 +41,7 @@
       "url": "./index.html",
       "icons": [
         {
-          "src": "icons/icon-192x192-A.png",
+          "src": "icons/192x192 Blue Sense.png",
           "sizes": "192x192"
         }
       ]
