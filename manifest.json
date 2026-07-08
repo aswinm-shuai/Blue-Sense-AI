@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "PWA Template Responsif",
-  "short_name": "PWA Demo",
-  "description": "Aplikasi PWA responsif untuk demonstrasi template dasar Progressive Web App dengan dukungan offline dan installable.",
+  "name": "Blue Sense AI",
+  "short_name": "Blue Sense AI",
+  "description": "Memonitor kualitas air kolam ikan secara real-time menggunakan sensor IoT, memberikan analisis kondisi air, prediksi perubahan kualitas air berbasis AI, rekomendasi tindakan otomatis, serta membantu peternak menjaga kesehatan ikan dan meningkatkan produktivitas budidaya.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
