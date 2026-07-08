@@ -6,6 +6,18 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "dir": "ltr",
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
   "background_color": "#4F46E5",
   "theme_color": "#4F46E5",
   "orientation": "portrait",
