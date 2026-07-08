@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Blue Sense AI — Smart Water Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="wave-bg"></div>
+
+    <!-- =========================================================
+     AUTH SCREEN
+========================================================= -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <div class="auth-visual">
+                <div class="ripple" style="width:60px;height:60px;top:20%;left:15%;"></div>
+                <div class="ripple" style="width:60px;height:60px;top:60%;left:65%;animation-delay:1.5s;"></div>
+                <div class="ripple" style="width:60px;height:60px;top:75%;left:20%;animation-delay:3s;"></div>
+                <div class="brand-mark">
+                    <svg class="drop" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C12 2 5 11.5 5 16a7 7 0 0014 0c0-4.5-7-14-7-14z" fill="#fff" />
+                    </svg>
+                    Blue Sense AI
+                </div>
+                <div>
+                    <h2 style="color:#fff;font-size:1.7rem;" data-i18n="auth_hero_title">Kolam sehat, panen maksimal.
+                    </h2>
+                    <p style="color:rgba(255,255,255,.85);font-size:.95rem;max-width:360px;" data-i18n="auth_hero_sub">
+                        Pantau pH, suhu, oksigen terlarut, amonia, kekeruhan, dan tinggi air kolam Anda secara real-time
+                        — lengkap dengan prediksi AI dan kontrol otomatis aerator &amp; pompa.</p>
+                </div>
+                <div class="d-flex gap-4" style="position:relative;z-index:2;">
+                    <div>
+                        <div class="fw-bold fs-5">24/7</div>
+                        <div class="small" style="color:rgba(255,255,255,.75);" data-i18n="auth_stat_1">Monitoring</div>
+                    </div>
+                    <div>
+                        <div class="fw-bold fs-5">6+</div>
+                        <div class="small" style="color:rgba(255,255,255,.75);" data-i18n="auth_stat_2">Parameter Sensor
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fw-bold fs-5">AI</div>
+                        <div class="small" style="color:rgba(255,255,255,.75);" data-i18n="auth_stat_3">Prediksi &amp;
+                            Rekomendasi</div>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-form-side">
+                <div class="d-flex gap-4 mb-4">
+                    <div class="auth-tab active" data-authtab="login" data-i18n="tab_login">Masuk</div>
+                    <div class="auth-tab" data-authtab="register" data-i18n="tab_register">Daftar</div>
+                    <div class="auth-tab" data-authtab="forgot" data-i18n="tab_forgot">Lupa Password</div>
+                </div>
+
+                <div id="loginForm" class="auth-pane">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" data-i18n="lbl_email">Email</label>
+                        <input type="email" class="form-control" id="loginEmail" placeholder="nama@email.com" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold" data-i18n="lbl_password">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required
+                            minlength="6">
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                            <label class="form-check-label small" for="rememberMe" data-i18n="lbl_remember">Ingat
+                                saya</label>
+                        </div>
+                    </div>
+                    <div id="loginError" class="text-danger small mb-2" style="display:none;"></div>
+                    <button type="button" class="btn btn-water w-100 mb-2" data-i18n="btn_login">Masuk</button>
+                    <button type="button" class="btn btn-outline-water w-100 mb-3" id="googleLoginBtn"><i
+                            class="bi bi-google me-2"></i><span data-i18n="btn_google">Masuk dengan
+                            Google</span></button>
+                    <div class="small-muted text-center" data-i18n="demo_hint">Demo: gunakan akun apa pun untuk
+                        mendaftar, lalu masuk.</div>
+                </div>
+
+                <div id="registerForm" class="auth-pane" style="display:none;">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" data-i18n="lbl_name">Nama Lengkap</label>
+                        <input type="text" class="form-control" id="regName" placeholder="Nama Anda" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" data-i18n="lbl_email">Email</label>
+                        <input type="email" class="form-control" id="regEmail" placeholder="nama@email.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" data-i18n="lbl_password">Password</label>
+                        <input type="password" class="form-control" id="regPassword" placeholder="Minimal 6 karakter"
+                            required minlength="6">
+                    </div>
+                    <div id="regError" class="text-danger small mb-2" style="display:none;"></div>
+                    <button type="button" class="btn btn-water w-100" data-i18n="btn_register">Buat Akun</button>
+                </div>
+
+                <div id="forgotForm" class="auth-pane" style="display:none;">
+                    <p class="small-muted" data-i18n="forgot_desc">Masukkan email Anda, kami akan mengirimkan tautan
+                        reset password (simulasi).</p>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" data-i18n="lbl_email">Email</label>
+                        <input type="email" class="form-control" id="forgotEmail" placeholder="nama@email.com" required>
+                    </div>
+                    <div id="forgotMsg" class="text-success small mb-2" style="display:none;" data-i18n="forgot_sent">
+                        Tautan reset password telah dikirim ke email Anda.</div>
+                    <button type="button" class="btn btn-water w-100" data-i18n="btn_send">Kirim Tautan Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+     APP SHELL
+========================================================= -->
+    <div id="appShell">
+        <div class="scrim" id="scrim"></div>
+        <nav class="sidebar" id="sidebar">
+            <div class="brand-mark"><svg class="drop" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C12 2 5 11.5 5 16a7 7 0 0014 0c0-4.5-7-14-7-14z" fill="#0EA5E9" />
+                </svg> Blue Sense AI</div>
+            <div class="nav-section-label" data-i18n="nav_main">Utama</div>
+            <div class="nav-item-x active" data-view="dashboard"><i class="bi bi-grid-1x2-fill"></i><span
+                    data-i18n="nav_dashboard">Dashboard</span></div>
+            <div class="nav-item-x" data-view="sensors"><i class="bi bi-thermometer-half"></i><span
+                    data-i18n="nav_sensors">Sensor</span></div>
+            <div class="nav-item-x" data-view="history"><i class="bi bi-graph-up"></i><span
+                    data-i18n="nav_history">Riwayat</span></div>
+            <div class="nav-item-x" data-view="ai"><i class="bi bi-stars"></i><span data-i18n="nav_ai">Prediksi
+                    AI</span></div>
+            <div class="nav-item-x" data-view="chat"><i class="bi bi-chat-dots-fill"></i><span data-i18n="nav_chat">Chat
+                    AI</span></div>
+            <div class="nav-section-label" data-i18n="nav_iot">Perangkat IoT</div>
+            <div class="nav-item-x" data-view="devices"><i class="bi bi-hdd-network-fill"></i><span
+                    data-i18n="nav_devices">Perangkat</span></div>
+            <div class="nav-item-x" data-view="control"><i class="bi bi-toggles2"></i><span
+                    data-i18n="nav_control">Kontrol</span></div>
+            <div class="nav-section-label" data-i18n="nav_ops">Operasional</div>
+            <div class="nav-item-x" data-view="schedule"><i class="bi bi-calendar-check-fill"></i><span
+                    data-i18n="nav_schedule">Jadwal</span></div>
+            <div class="nav-item-x" data-view="harvest"><i class="bi bi-basket2-fill"></i><span
+                    data-i18n="nav_harvest">Estimasi Panen</span></div>
+            <div class="nav-item-x" data-view="reports"><i class="bi bi-file-earmark-pdf-fill"></i><span
+                    data-i18n="nav_reports">Laporan</span></div>
+            <div class="nav-item-x" data-view="ponds"><i class="bi bi-water"></i><span data-i18n="nav_ponds">Kelola
+                    Kolam</span></div>
+            <div class="nav-section-label" data-i18n="nav_account">Akun</div>
+            <div class="nav-item-x" data-view="profile"><i class="bi bi-person-fill"></i><span
+                    data-i18n="nav_profile">Profil</span></div>
+            <div class="nav-item-x" data-view="settings"><i class="bi bi-gear-fill"></i><span
+                    data-i18n="nav_settings">Pengaturan</span></div>
+            <div class="nav-item-x" id="logoutBtn"><i class="bi bi-box-arrow-right"></i><span
+                    data-i18n="nav_logout">Keluar</span></div>
+            <div class="mt-auto small-muted px-2 pt-3" style="border-top:1px solid var(--bs-border);">Blue Sense AI
+                v1.0<br><span id="userNameSmall"></span></div>
+        </nav>
+
+        <div class="main-col">
+            <div class="topbar">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="icon-btn d-lg-none" id="hamburgerBtn"><i class="bi bi-list fs-5"></i></button>
+                    <div class="pond-pill dropdown-toggle" id="pondSwitcher" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <span class="dot" id="pondDot" style="background:#14B8A6;"></span>
+                        <span id="pondPillName" class="fw-semibold small">Kolam Lele A</span>
+                    </div>
+                    <ul class="dropdown-menu" id="pondDropdownMenu"></ul>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="icon-btn" id="langToggle" title="Language"><span class="fw-bold small"
+                            id="langLabel">ID</span></button>
+                    <button class="icon-btn" id="themeToggle" title="Dark/Light"><i class="bi bi-moon-stars-fill"
+                            id="themeIcon"></i></button>
+                    <button class="icon-btn" id="notifBtn" title="Notifikasi"><i class="bi bi-bell-fill"></i><span
+                            class="badge-dot" id="notifDot" style="display:none;"></span></button>
+                    <div class="dropdown">
+                        <button class="icon-btn" data-bs-toggle="dropdown"><i
+                                class="bi bi-person-circle fs-5"></i></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" data-view="profile" data-i18n="nav_profile">Profil</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" data-view="settings"
+                                    data-i18n="nav_settings">Pengaturan</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="#" id="logoutBtn2"
+                                    data-i18n="nav_logout">Keluar</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view-content">
+
+                <!-- DASHBOARD -->
+                <div class="view active" id="view-dashboard">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="dash_title">Dashboard Monitoring</h4>
+                            <div class="small-muted" data-i18n="dash_sub">Kondisi kolam Anda secara real-time</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-5">
+                            <div class="status-banner aman h-100" id="statusBanner">
+                                <div class="gauge-wrap">
+                                    <svg viewBox="0 0 120 120">
+                                        <defs>
+                                            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#ffffff" />
+                                                <stop offset="100%" stop-color="#ffffff" />
+                                            </linearGradient>
+                                        </defs>
+                                        <circle class="gauge-track" cx="60" cy="60" r="50"
+                                            style="stroke:rgba(255,255,255,.25);" />
+                                        <circle class="gauge-fill" id="gaugeFill" cx="60" cy="60" r="50"
+                                            stroke-dasharray="314" stroke-dashoffset="80" style="stroke:#fff;" />
+                                    </svg>
+                                    <div class="gauge-center">
+                                        <div class="num" id="healthScoreNum" style="color:#fff;">--</div>
+                                        <div class="lbl" style="color:rgba(255,255,255,.85);" data-i18n="dash_score">
+                                            Health Score</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fs-5 fw-bold" id="statusLabel">Aman</div>
+                                    <div class="small" style="color:rgba(255,255,255,.9);" id="statusDesc"
+                                        data-i18n="dash_status_ok">Semua parameter dalam kondisi ideal untuk pertumbuhan
+                                        ikan.</div>
+                                    <div class="small mt-2" style="color:rgba(255,255,255,.8);"><i
+                                            class="bi bi-clock-history me-1"></i><span
+                                            data-i18n="dash_updated">Diperbarui</span> <span id="lastUpdated">baru
+                                            saja</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="row g-3 h-100">
+                                <div class="col-md-4">
+                                    <div class="card-x h-100">
+                                        <div class="card-body-x">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <div class="small-muted" data-i18n="dash_ponds">Kolam Terhubung
+                                                    </div>
+                                                    <div class="fs-3 fw-bold mono" id="statPonds">3</div>
+                                                </div>
+                                                <div class="sic"
+                                                    style="background:rgba(14,165,233,.12);color:var(--bs-primary-c);">
+                                                    <i class="bi bi-water"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card-x h-100">
+                                        <div class="card-body-x">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <div class="small-muted" data-i18n="dash_devices_on">Perangkat
+                                                        Online</div>
+                                                    <div class="fs-3 fw-bold mono" id="statDevices">4/5</div>
+                                                </div>
+                                                <div class="sic"
+                                                    style="background:rgba(20,184,166,.12);color:var(--bs-aqua);"><i
+                                                        class="bi bi-hdd-network-fill"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card-x h-100">
+                                        <div class="card-body-x">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <div class="small-muted" data-i18n="dash_alerts">Notifikasi Aktif
+                                                    </div>
+                                                    <div class="fs-3 fw-bold mono" id="statAlerts">0</div>
+                                                </div>
+                                                <div class="sic"
+                                                    style="background:rgba(245,165,36,.12);color:var(--bs-amber);"><i
+                                                        class="bi bi-bell-fill"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card-x">
+                                        <div class="card-body-x py-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-semibold small" data-i18n="dash_trend">Tren 24 Jam
+                                                    Terakhir</span>
+                                                <span class="small-muted" id="chartRangeLabel">pH &amp; Suhu</span>
+                                            </div>
+                                            <div style="height:120px;"><canvas id="miniTrendChart"></canvas></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">
+                        <h5 class="mb-0" data-i18n="dash_params">Parameter Sensor</h5>
+                    </div>
+                    <div class="row g-3" id="sensorGrid"></div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-lg-7">
+                            <div class="card-x h-100">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-2" data-i18n="dash_rec">Rekomendasi AI Terbaru</div>
+                                    <div id="dashRecList"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card-x h-100">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-2" data-i18n="dash_devstat">Status Perangkat</div>
+                                    <div id="dashDeviceList"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SENSORS DETAIL -->
+                <div class="view" id="view-sensors">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_sensors">Sensor</h4>
+                            <div class="small-muted" data-i18n="sensors_sub">Detail seluruh pembacaan sensor IoT kolam
+                                terpilih</div>
+                        </div>
+                    </div>
+                    <div class="row g-3" id="sensorDetailGrid"></div>
+                </div>
+
+                <!-- HISTORY -->
+                <div class="view" id="view-history">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_history">Riwayat Kualitas Air</h4>
+                            <div class="small-muted" data-i18n="history_sub">Analisis tren perubahan parameter dari
+                                waktu ke waktu</div>
+                        </div>
+                    </div>
+                    <div class="card-x mb-3">
+                        <div class="card-body-x">
+                            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-water range-btn active" data-range="day"
+                                        data-i18n="range_day">Harian</button>
+                                    <button class="btn btn-sm btn-outline-water range-btn" data-range="week"
+                                        data-i18n="range_week">Mingguan</button>
+                                    <button class="btn btn-sm btn-outline-water range-btn" data-range="month"
+                                        data-i18n="range_month">Bulanan</button>
+                                </div>
+                                <select class="form-select form-select-sm w-auto" id="historyParamSelect">
+                                    <option value="ph">pH</option>
+                                    <option value="suhu">Suhu (°C)</option>
+                                    <option value="do">DO (mg/L)</option>
+                                    <option value="amonia">Amonia (mg/L)</option>
+                                    <option value="kekeruhan">Kekeruhan (NTU)</option>
+                                    <option value="tinggi">Tinggi Air (cm)</option>
+                                </select>
+                            </div>
+                            <div style="height:340px;"><canvas id="historyChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI PREDICTION -->
+                <div class="view" id="view-ai">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_ai">Prediksi &amp; Rekomendasi AI</h4>
+                            <div class="small-muted" data-i18n="ai_sub">Analisis prediktif berbasis data historis sensor
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card-x h-100">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3"><i
+                                            class="bi bi-graph-up-arrow me-2 text-primary"></i><span
+                                            data-i18n="ai_forecast">Prediksi 24 Jam ke Depan</span></div>
+                                    <div style="height:220px;"><canvas id="forecastChart"></canvas></div>
+                                    <div class="small-muted mt-2" id="forecastNote" data-i18n="ai_forecast_note">Model
+                                        memperkirakan tren berdasarkan 7 hari data terakhir.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card-x h-100">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3"><i
+                                            class="bi bi-lightbulb-fill me-2 text-warning"></i><span
+                                            data-i18n="ai_riskfactors">Faktor Risiko Terdeteksi</span></div>
+                                    <div id="riskFactorList"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3"><i class="bi bi-robot me-2 text-success"></i><span
+                                            data-i18n="ai_actions">Rekomendasi Tindakan Otomatis</span></div>
+                                    <div id="aiRecList"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAT AI -->
+                <div class="view" id="view-chat">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_chat">Chat AI — Asisten Budidaya</h4>
+                            <div class="small-muted" data-i18n="chat_sub">Tanyakan apa saja seputar kondisi kolam dan
+                                budidaya ikan Anda</div>
+                        </div>
+                    </div>
+                    <div class="card-x" style="height:70vh;display:flex;flex-direction:column;">
+                        <div class="flex-grow-1 overflow-auto p-3 d-flex flex-column gap-2" id="chatWindow"></div>
+                        <div class="p-3 border-top d-flex gap-2" style="border-color:var(--bs-border) !important;">
+                            <input type="text" class="form-control" id="chatInput"
+                                placeholder="Ketik pertanyaan Anda...">
+                            <button class="btn btn-water" id="chatSendBtn"><i class="bi bi-send-fill"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DEVICES -->
+                <div class="view" id="view-devices">
+                    <div class="section-title d-flex justify-content-between w-100">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_devices">Manajemen Perangkat IoT</h4>
+                            <div class="small-muted" data-i18n="devices_sub">Kelola koneksi ESP32 dan sensor pada setiap
+                                kolam</div>
+                        </div>
+                        <button class="btn btn-water" data-bs-toggle="modal" data-bs-target="#pairModal"><i
+                                class="bi bi-plus-lg me-1"></i><span data-i18n="devices_add">Tambah
+                                Perangkat</span></button>
+                    </div>
+                    <div class="row g-3" id="deviceGrid"></div>
+                </div>
+
+                <!-- CONTROL -->
+                <div class="view" id="view-control">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_control">Kontrol Perangkat</h4>
+                            <div class="small-muted" data-i18n="control_sub">Kendalikan aerator, pompa, dan katup air
+                                secara langsung atau otomatis</div>
+                        </div>
+                    </div>
+                    <div class="row g-3" id="controlGrid"></div>
+                </div>
+
+                <!-- SCHEDULE -->
+                <div class="view" id="view-schedule">
+                    <div class="section-title d-flex justify-content-between w-100">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_schedule">Jadwal Perawatan</h4>
+                            <div class="small-muted" data-i18n="schedule_sub">Atur pengingat pemberian pakan, pergantian
+                                air, dan vitamin</div>
+                        </div>
+                        <button class="btn btn-water" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i
+                                class="bi bi-plus-lg me-1"></i><span data-i18n="schedule_add">Tambah
+                                Jadwal</span></button>
+                    </div>
+                    <div id="scheduleList" class="row g-3"></div>
+                </div>
+
+                <!-- HARVEST -->
+                <div class="view" id="view-harvest">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_harvest">Estimasi Waktu Panen</h4>
+                            <div class="small-muted" data-i18n="harvest_sub">Perkirakan waktu panen berdasarkan
+                                pertumbuhan &amp; kondisi kolam</div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-5">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold" data-i18n="harvest_fish_type">Jenis
+                                            Ikan</label>
+                                        <select class="form-select" id="harvestFishType">
+                                            <option value="lele">Lele</option>
+                                            <option value="nila">Nila</option>
+                                            <option value="gurame">Gurame</option>
+                                            <option value="patin">Patin</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold" data-i18n="harvest_age">Umur Ikan
+                                            (hari)</label>
+                                        <input type="number" class="form-control" id="harvestAge" value="35" min="1">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold" data-i18n="harvest_weight">Berat
+                                            Rata-rata Saat Ini (gram)</label>
+                                        <input type="number" class="form-control" id="harvestWeight" value="65" min="1">
+                                    </div>
+                                    <button class="btn btn-water w-100" id="calcHarvestBtn"
+                                        data-i18n="harvest_calc">Hitung Estimasi</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="card-x h-100">
+                                <div class="card-body-x d-flex flex-column justify-content-center align-items-center text-center"
+                                    id="harvestResult">
+                                    <i class="bi bi-basket2 fs-1 text-primary mb-2"></i>
+                                    <div class="small-muted" data-i18n="harvest_placeholder">Masukkan data ikan pada
+                                        form di samping untuk melihat estimasi waktu panen.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORTS -->
+                <div class="view" id="view-reports">
+                    <div class="section-title">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_reports">Laporan</h4>
+                            <div class="small-muted" data-i18n="reports_sub">Unduh ringkasan kondisi kolam dalam format
+                                PDF atau Excel</div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <label class="form-label small fw-semibold" data-i18n="reports_type">Jenis
+                                        Laporan</label>
+                                    <select class="form-select mb-3" id="reportType">
+                                        <option value="harian" data-i18n="reports_daily">Laporan Harian</option>
+                                        <option value="bulanan" data-i18n="reports_monthly">Laporan Bulanan</option>
+                                    </select>
+                                    <button class="btn btn-water w-100 mb-2" id="exportPdfBtn"><i
+                                            class="bi bi-file-earmark-pdf-fill me-2"></i><span
+                                            data-i18n="reports_pdf">Ekspor PDF</span></button>
+                                    <button class="btn btn-outline-water w-100" id="exportCsvBtn"><i
+                                            class="bi bi-file-earmark-spreadsheet-fill me-2"></i><span
+                                            data-i18n="reports_csv">Ekspor Excel (CSV)</span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card-x">
+                                <div class="card-body-x" id="reportPreview">
+                                    <div class="small-muted" data-i18n="reports_preview_hint">Pratinjau laporan akan
+                                        tampil di sini.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PONDS MANAGEMENT -->
+                <div class="view" id="view-ponds">
+                    <div class="section-title d-flex justify-content-between w-100">
+                        <div>
+                            <h4 class="mb-0" data-i18n="nav_ponds">Kelola Kolam</h4>
+                            <div class="small-muted" data-i18n="ponds_sub">Kelola beberapa kolam dalam satu akun</div>
+                        </div>
+                        <button class="btn btn-water" data-bs-toggle="modal" data-bs-target="#addPondModal"><i
+                                class="bi bi-plus-lg me-1"></i><span data-i18n="ponds_add">Tambah Kolam</span></button>
+                    </div>
+                    <div class="row g-3" id="pondManageGrid"></div>
+
+                    <div class="card-x mt-4">
+                        <div class="card-body-x">
+                            <div class="fw-semibold mb-3" data-i18n="ponds_arch">Arsitektur Sistem</div>
+                            <div style="overflow-x:auto;">
+                                <svg viewBox="0 0 900 260" style="min-width:700px;width:100%;">
+                                    <style>
+                                        .archbox {
+                                            fill: var(--bs-card);
+                                            stroke: var(--bs-border);
+                                            stroke-width: 1.5;
+                                        }
+
+                                        .archtxt {
+                                            font-family: Poppins, sans-serif;
+                                            font-size: 12px;
+                                            fill: var(--bs-ink);
+                                        }
+
+                                        .archline {
+                                            stroke: #0EA5E9;
+                                            stroke-width: 2;
+                                            fill: none;
+                                            marker-end: url(#arrow);
+                                        }
+                                    </style>
+                                    <defs>
+                                        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3"
+                                            orient="auto">
+                                            <path d="M0,0 L6,3 L0,6 Z" fill="#0EA5E9" />
+                                        </marker>
+                                    </defs>
+                                    <rect class="archbox" x="20" y="15" width="150" height="60" rx="10" /><text
+                                        class="archtxt" x="30" y="35">Sensor pH, Suhu, DO,</text><text class="archtxt"
+                                        x="30" y="52">Turbidity, Water Level</text>
+                                    <path class="archline" d="M170 45 H 230" />
+                                    <rect class="archbox" x="230" y="15" width="90" height="60" rx="10" /><text
+                                        class="archtxt" x="252" y="50">ESP32</text>
+                                    <path class="archline" d="M275 75 V 110" />
+                                    <text class="archtxt" x="280" y="100">WiFi (MQTT/Firebase)</text>
+                                    <rect class="archbox" x="230" y="110" width="90" height="55" rx="10" /><text
+                                        class="archtxt" x="240" y="142">Firebase Cloud</text>
+                                    <path class="archline" d="M275 165 V 200" />
+                                    <path class="archline" d="M275 185 H 100 V 200" />
+                                    <path class="archline" d="M275 185 H 450 V 200" />
+                                    <rect class="archbox" x="40" y="200" width="120" height="45" rx="10" /><text
+                                        class="archtxt" x="65" y="227">Android App</text>
+                                    <rect class="archbox" x="220" y="200" width="120" height="45" rx="10" /><text
+                                        class="archtxt" x="245" y="227">Web Dashboard</text>
+                                    <rect class="archbox" x="400" y="200" width="120" height="45" rx="10" /><text
+                                        class="archtxt" x="418" y="227">AI Engine</text>
+                                    <path class="archline" d="M520 222 H 580" />
+                                    <rect class="archbox" x="580" y="197" width="150" height="50" rx="10" /><text
+                                        class="archtxt" x="592" y="217">Prediksi &amp;</text><text class="archtxt"
+                                        x="592" y="233">Rekomendasi</text>
+                                    <path class="archline" d="M730 222 H 790" />
+                                    <rect class="archbox" x="790" y="197" width="95" height="50" rx="10" /><text
+                                        class="archtxt" x="802" y="217">Relay →</text><text class="archtxt" x="802"
+                                        y="233">Aerator/Pompa</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFILE -->
+                <div class="view" id="view-profile">
+                    <div class="section-title">
+                        <h4 class="mb-0" data-i18n="nav_profile">Profil</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <div class="text-center mb-3">
+                                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mono fw-bold fs-3"
+                                            style="width:80px;height:80px;background:linear-gradient(135deg,var(--bs-primary-c),var(--bs-aqua));color:#fff;"
+                                            id="profileAvatar">A</div>
+                                    </div>
+                                    <div class="mb-3"><label class="form-label small fw-semibold"
+                                            data-i18n="lbl_name">Nama Lengkap</label><input type="text"
+                                            class="form-control" id="profileName"></div>
+                                    <div class="mb-3"><label class="form-label small fw-semibold"
+                                            data-i18n="lbl_email">Email</label><input type="email" class="form-control"
+                                            id="profileEmail" disabled></div>
+                                    <div class="mb-3"><label class="form-label small fw-semibold"
+                                            data-i18n="profile_role">Peran</label>
+                                        <select class="form-select" id="profileRole">
+                                            <option data-i18n="role_1">Peternak Ikan Air Tawar</option>
+                                            <option data-i18n="role_2">Peternak Ikan Air Laut</option>
+                                            <option data-i18n="role_3">Pemilik Tambak</option>
+                                            <option data-i18n="role_4">UMKM Budidaya Ikan</option>
+                                            <option data-i18n="role_5">Dinas Perikanan / Peneliti</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-water" id="saveProfileBtn" data-i18n="profile_save">Simpan
+                                        Perubahan</button>
+                                    <span class="text-success small ms-2" id="profileSavedMsg" style="display:none;"
+                                        data-i18n="profile_saved">Tersimpan!</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3" data-i18n="profile_activity">Log Aktivitas</div>
+                                    <div id="activityLog" style="max-height:340px;overflow:auto;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS -->
+                <div class="view" id="view-settings">
+                    <div class="section-title">
+                        <h4 class="mb-0" data-i18n="nav_settings">Pengaturan</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3" data-i18n="settings_appearance">Tampilan</div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span data-i18n="settings_dark">Mode Gelap</span>
+                                        <div class="toggle-switch" id="darkModeSwitch">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span data-i18n="settings_lang">Bahasa</span>
+                                        <select class="form-select w-auto" id="langSelect">
+                                            <option value="id">Bahasa Indonesia</option>
+                                            <option value="en">English</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span data-i18n="settings_notif">Notifikasi Push</span>
+                                        <div class="toggle-switch on" id="pushNotifSwitch">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-x mt-3">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3" data-i18n="settings_sync">Sinkronisasi &amp; Data
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3"><span
+                                            data-i18n="settings_cloud_backup">Backup Otomatis ke Cloud</span>
+                                        <div class="toggle-switch on" id="cloudBackupSwitch">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2"><span
+                                            data-i18n="settings_offline">Mode Offline</span>
+                                        <div class="toggle-switch on" id="offlineModeSwitch">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="small-muted" data-i18n="settings_offline_note">Data tetap tersimpan
+                                        sementara dan akan disinkronkan otomatis saat koneksi kembali tersedia.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card-x">
+                                <div class="card-body-x">
+                                    <div class="fw-semibold mb-3" data-i18n="settings_threshold">Ambang Batas Sensor
+                                        (per Jenis Ikan)</div>
+                                    <select class="form-select mb-3" id="thresholdFishSelect">
+                                        <option value="lele">Lele</option>
+                                        <option value="nila">Nila</option>
+                                        <option value="gurame">Gurame</option>
+                                        <option value="patin">Patin</option>
+                                    </select>
+                                    <div id="thresholdEditor"></div>
+                                    <button class="btn btn-water mt-2" id="saveThresholdBtn"
+                                        data-i18n="profile_save">Simpan Perubahan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+     MODALS
+========================================================= -->
+    <!-- Device pairing modal -->
+    <div class="modal fade" id="pairModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" data-i18n="pair_title">Hubungkan Perangkat IoT</h5><button
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-pills mb-3 justify-content-center" id="pairTabs">
+                        <li class="nav-item"><button class="nav-link active" data-pairtab="qr" data-i18n="pair_qr">Scan
+                                QR Code</button></li>
+                        <li class="nav-item"><button class="nav-link" data-pairtab="id" data-i18n="pair_id">Input Device
+                                ID</button></li>
+                    </ul>
+                    <div id="pairPane-qr" class="text-center">
+                        <div class="qr-box mb-3"><i class="bi bi-qr-code-scan fs-1"></i></div>
+                        <div class="small-muted mb-3" data-i18n="pair_qr_hint">Arahkan kamera ke QR Code pada perangkat
+                            ESP32 (simulasi otomatis).</div>
+                        <button class="btn btn-water" id="simulateScanBtn" data-i18n="pair_scan_btn">Mulai
+                            Pemindaian</button>
+                    </div>
+                    <div id="pairPane-id" style="display:none;">
+                        <div class="mb-3"><label class="form-label small fw-semibold" data-i18n="pair_device_name">Nama
+                                Perangkat</label><input type="text" class="form-control" id="newDeviceName"
+                                placeholder="Kolam Lele B"></div>
+                        <div class="mb-3"><label class="form-label small fw-semibold" data-i18n="pair_device_id">Device
+                                ID</label><input type="text" class="form-control" id="newDeviceId"
+                                placeholder="ESP32-XXXXXX"></div>
+                        <div class="mb-3"><label class="form-label small fw-semibold" data-i18n="pair_location">Lokasi
+                                Kolam</label><input type="text" class="form-control" id="newDeviceLocation"
+                                placeholder="Belakang rumah, Blok C"></div>
+                        <button class="btn btn-water w-100" id="addDeviceIdBtn"
+                            data-i18n="pair_connect">Hubungkan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WiFi settings modal -->
+    <div class="modal fade" id="wifiModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" data-i18n="wifi_title">Pengaturan WiFi ESP32</h5><button
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label small fw-semibold">SSID</label><input type="text"
+                            class="form-control" id="wifiSsid"></div>
+                    <div class="mb-3"><label class="form-label small fw-semibold">Password</label><input type="password"
+                            class="form-control" id="wifiPassword"></div>
+                    <button class="btn btn-water w-100" id="wifiConnectBtn" data-i18n="wifi_connect">Hubungkan</button>
+                    <div class="text-success small mt-2" id="wifiSuccessMsg" style="display:none;"
+                        data-i18n="wifi_success">Perangkat berhasil terhubung ke jaringan baru.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calibration modal -->
+    <div class="modal fade" id="calibModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" data-i18n="calib_title">Kalibrasi Sensor pH</h5><button
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="calibBody">
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+                        <div class="step-dot active" id="calibStep1">1</div>
+                        <div class="step-dot" id="calibStep2">2</div>
+                        <div class="step-dot" id="calibStep3">3</div>
+                    </div>
+                    <div id="calibContent">
+                        <i class="bi bi-droplet-half fs-1 text-primary mb-3 d-block"></i>
+                        <p class="small-muted" data-i18n="calib_step1_desc">Celupkan sensor pH ke dalam larutan buffer
+                            pH 7.0, lalu tekan Mulai Kalibrasi.</p>
+                        <button class="btn btn-water" id="calibNextBtn" data-i18n="calib_start">Mulai Kalibrasi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add pond modal -->
+    <div class="modal fade" id="addPondModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" data-i18n="ponds_add_title">Tambah Kolam Baru</h5><button
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label small fw-semibold" data-i18n="ponds_name">Nama
+                            Kolam</label><input type="text" class="form-control" id="newPondName"
+                            placeholder="Kolam Nila 2"></div>
+                    <div class="mb-3"><label class="form-label small fw-semibold" data-i18n="harvest_fish_type">Jenis
+                            Ikan</label>
+                        <select class="form-select" id="newPondFish">
+                            <option value="lele">Lele</option>
+                            <option value="nila">Nila</option>
+                            <option value="gurame">Gurame</option>
+                            <option value="patin">Patin</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-water w-100" id="addPondBtn" data-i18n="ponds_create">Buat Kolam</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" data-i18n="schedule_add_title">Tambah Jadwal</h5><button
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label small fw-semibold"
+                            data-i18n="schedule_activity">Aktivitas</label>
+                        <select class="form-select" id="newSchedActivity">
+                            <option data-i18n="sched_feed">Pemberian Pakan</option>
+                            <option data-i18n="sched_water">Pergantian Air</option>
+                            <option data-i18n="sched_vitamin">Pemberian Vitamin</option>
+                            <option data-i18n="sched_maint">Perawatan Kolam</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label class="form-label small fw-semibold"
+                            data-i18n="schedule_time">Waktu</label><input type="time" class="form-control"
+                            id="newSchedTime" value="07:00"></div>
+                    <div class="mb-3"><label class="form-label small fw-semibold"
+                            data-i18n="schedule_repeat">Pengulangan</label>
+                        <select class="form-select" id="newSchedRepeat">
+                            <option data-i18n="sched_daily">Setiap Hari</option>
+                            <option data-i18n="sched_weekly">Setiap Minggu</option>
+                            <option data-i18n="sched_once">Sekali</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-water w-100" id="addScheduleBtn" data-i18n="schedule_save">Simpan
+                        Jadwal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="notifOffcanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-bold" data-i18n="notif_title">Notifikasi</h5><button class="btn-close"
+                data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body" id="notifOffcanvasBody"></div>
+    </div>
+
+    <div class="toast-x">
+        <div id="mainToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="mainToastBody"></div><button class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
